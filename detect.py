@@ -1,28 +1,26 @@
+import streamlit as st
 import cv2
+import numpy as np
 from ultralytics import YOLO
 
-# Load YOLOv8 model (pretrained on COCO dataset)
-model = YOLO("yolov8n.pt")   # 'n' = nano, fastest version
+# Load YOLOv8 model
+model = YOLO("yolov8n.pt")
 
-# Open webcam
-cap = cv2.VideoCapture(0)
+st.title("YOLOv8 Live Detection")
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
+# Upload an image
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-    # Run detection
-    results = model(frame)
+if uploaded_file is not None:
+    # Convert uploaded file to OpenCV image
+    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    # Draw results on frame
-    annotated_frame = results[0].plot()
+    # Run YOLOv8 detection
+    results = model(img)
 
-    cv2.imshow("YOLOv8 Live Detection", annotated_frame)
+    # Annotate results
+    annotated_img = results[0].plot()
 
-    # Press 'q' to quit
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
+    # Display in Streamlit
+    st.image(annotated_img, channels="BGR")
