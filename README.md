@@ -2,7 +2,7 @@
 
 This project runs real-time object detection using YOLOv8 and a webcam.
 
-## 🚀 How to Run
+
 
 1. Clone the repository:
    ```bash
